@@ -2,42 +2,34 @@
 
 module Philiprehberger
   module Table
-    # Renders table content with borders and alignment
     class Renderer
       ANSI_PATTERN = /\e\[[0-9;]*m/
 
-      # @param headers [Array<String>] column headers
-      # @param rows [Array<Array<String>>] row data
-      # @param widths [Array<Integer>] column widths
-      # @param align [Hash{Integer => Symbol}] column alignment overrides
-      # @param style [Hash] border style definition
-      def initialize(headers:, rows:, widths:, align:, style:)
+      def initialize(headers:, rows:, widths:, align:, style:, style_name:)
         @headers = headers
         @rows = rows
         @widths = widths
         @align = align
         @style = style
+        @style_name = style_name
       end
 
-      # Render the full table as a string
-      #
-      # @return [String]
       def render
         lines = []
 
-        case style_name
+        case @style_name
         when :markdown
-          lines << render_row(@headers)
+          lines << render_data_row(@headers)
           lines << render_markdown_separator
-          @rows.each { |row| lines << render_row(row) }
+          @rows.each { |row| lines << render_data_row(row) }
         when :compact
           lines << render_compact_row(@headers)
           @rows.each { |row| lines << render_compact_row(row) }
         else
           lines << render_border(:top)
-          lines << render_row(@headers)
+          lines << render_data_row(@headers)
           lines << render_border(:mid)
-          @rows.each { |row| lines << render_row(row) }
+          @rows.each { |row| lines << render_data_row(row) }
           lines << render_border(:bottom)
         end
 
@@ -45,13 +37,6 @@ module Philiprehberger
       end
 
       private
-
-      def style_name
-        return :markdown if @style == Styles::MARKDOWN
-        return :compact if @style == Styles::COMPACT
-
-        :bordered
-      end
 
       def visible_length(str)
         str.to_s.gsub(ANSI_PATTERN, '').length
@@ -76,19 +61,22 @@ module Philiprehberger
         end
       end
 
-      def render_row(cells)
+      def render_data_row(cells)
         v = @style[:vertical]
-        padded = cells.each_with_index.map { |cell, i| pad_cell(cell, @widths[i], i) }
-
-        if v
-          "#{v} #{padded.join(" #{v} ")} #{v}"
-        else
-          padded.join('  ')
+        padded = @widths.each_with_index.map do |width, i|
+          cell = i < cells.length ? cells[i].to_s : ''
+          pad_cell(cell, width, i)
         end
+
+        "#{v} #{padded.join(" #{v} ")} #{v}"
       end
 
       def render_compact_row(cells)
-        padded = cells.each_with_index.map { |cell, i| pad_cell(cell, @widths[i], i) }
+        padded = @widths.each_with_index.map do |width, i|
+          cell = i < cells.length ? cells[i].to_s : ''
+          pad_cell(cell, width, i)
+        end
+
         padded.join('  ')
       end
 
@@ -107,9 +95,7 @@ module Philiprehberger
       end
 
       def render_markdown_separator
-        segments = @widths.map do |w|
-          @style[:horizontal] * (w + 2)
-        end
+        segments = @widths.map { |w| @style[:horizontal] * (w + 2) }
         "#{@style[:mid_left]}#{segments.join(@style[:mid_mid])}#{@style[:mid_right]}"
       end
     end

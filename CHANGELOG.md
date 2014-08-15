@@ -1,19 +1,18 @@
 # Changelog
 
-All notable changes to this gem will be documented in this file.
+All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this gem adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-## [0.1.0] - 2026-03-21
+## [0.1.0] - 2026-03-22
 
 ### Added
-- Initial release
-- Table rendering with Unicode, ASCII, Markdown, and Compact styles
+
+- Table rendering with Unicode, ASCII, Markdown, and compact styles
 - Column alignment: left (default), right, and center
-- Auto-sizing columns to fit content
+- Auto-sizing columns to fit widest content
 - ANSI color-safe width calculation
+- Nil cell handling (rendered as empty strings)
 - `Renderer` class for border drawing and layout
 - `Styles` module with predefined style definitions

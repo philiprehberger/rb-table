@@ -6,38 +6,19 @@ require_relative 'table/renderer'
 
 module Philiprehberger
   module Table
-    class Error < StandardError; end
-
     ANSI_PATTERN = /\e\[[0-9;]*m/
 
-    # Create a new table
-    #
-    # @param headers [Array<String>] column headers
-    # @param rows [Array<Array<String>>] row data
-    # @param align [Hash{Integer => Symbol}] column alignment (:left, :right, :center)
-    # @return [Grid] a renderable table
-    # @raise [Error] if headers is not an Array
     def self.new(headers:, rows: [], align: {})
       Grid.new(headers: headers, rows: rows, align: align)
     end
 
-    # A table grid that can be rendered in multiple styles
     class Grid
-      # @param headers [Array<String>] column headers
-      # @param rows [Array<Array<String>>] row data
-      # @param align [Hash{Integer => Symbol}] column alignment overrides
       def initialize(headers:, rows: [], align: {})
-        raise Error, 'Headers must be an Array' unless headers.is_a?(Array)
-
-        @headers = headers.map(&:to_s)
-        @rows = rows.map { |row| row.map(&:to_s) }
+        @headers = headers.map { |h| h.nil? ? '' : h.to_s }
+        @rows = rows.map { |row| row.map { |cell| cell.nil? ? '' : cell.to_s } }
         @align = align
       end
 
-      # Render the table as a string
-      #
-      # @param style [Symbol] :unicode (default), :ascii, :markdown, or :compact
-      # @return [String]
       def render(style: :unicode)
         style_def = Styles.fetch(style)
         widths = calculate_widths
@@ -47,11 +28,11 @@ module Philiprehberger
           rows: @rows,
           widths: widths,
           align: @align,
-          style: style_def
+          style: style_def,
+          style_name: style
         ).render
       end
 
-      # @return [String]
       def to_s
         render
       end

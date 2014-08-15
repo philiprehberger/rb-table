@@ -2,7 +2,6 @@
 
 module Philiprehberger
   module Table
-    # Predefined table border styles
     module Styles
       UNICODE = {
         top_left: "\u250C", top_right: "\u2510", bottom_left: "\u2514", bottom_right: "\u2518",
@@ -19,18 +18,11 @@ module Philiprehberger
       }.freeze
 
       MARKDOWN = {
-        top_left: nil, top_right: nil, bottom_left: nil, bottom_right: nil,
         horizontal: '-', vertical: '|',
-        top_mid: nil, bottom_mid: nil,
         mid_left: '|', mid_right: '|', mid_mid: '|'
       }.freeze
 
-      COMPACT = {
-        top_left: nil, top_right: nil, bottom_left: nil, bottom_right: nil,
-        horizontal: nil, vertical: nil,
-        top_mid: nil, bottom_mid: nil,
-        mid_left: nil, mid_right: nil, mid_mid: nil
-      }.freeze
+      COMPACT = {}.freeze
 
       REGISTRY = {
         unicode: UNICODE,
@@ -39,11 +31,6 @@ module Philiprehberger
         compact: COMPACT
       }.freeze
 
-      # Look up a style by name
-      #
-      # @param name [Symbol] :unicode, :ascii, :markdown, or :compact
-      # @return [Hash] style definition
-      # @raise [KeyError] if style is not found
       def self.fetch(name)
         REGISTRY.fetch(name) { raise KeyError, "Unknown style: #{name}. Use: #{REGISTRY.keys.join(', ')}" }
       end
