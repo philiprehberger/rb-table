@@ -27,7 +27,7 @@ gem install philiprehberger-table
 ## Usage
 
 ```ruby
-require 'philiprehberger/table'
+require "philiprehberger/table"
 
 table = Philiprehberger::Table.new(
   headers: %w[Name Age City],
