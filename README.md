@@ -3,6 +3,7 @@
 [![Tests](https://github.com/philiprehberger/rb-table/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-table/actions/workflows/ci.yml)
 [![Gem Version](https://badge.fury.io/rb/philiprehberger-table.svg)](https://rubygems.org/gems/philiprehberger-table)
 [![License](https://img.shields.io/github/license/philiprehberger/rb-table)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 Terminal table formatting with Unicode borders, alignment, and multiple styles
 
@@ -90,4 +91,4 @@ bundle exec rubocop
 
 ## License
 
-MIT
+[MIT](LICENSE)
