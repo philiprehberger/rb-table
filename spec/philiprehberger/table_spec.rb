@@ -275,4 +275,48 @@ RSpec.describe Philiprehberger::Table do
       expect { table.render(style: :nonexistent) }.to raise_error(KeyError)
     end
   end
+
+  describe 'max_width truncation' do
+    it 'truncates long content' do
+      table = described_class.new(
+        headers: %w[Name Description],
+        rows: [['Alice', 'A very long description that should be truncated']],
+        max_width: { 1 => 20 }
+      )
+      output = table.render
+      expect(output).to include('A very long descr...')
+    end
+
+    it 'does not truncate short content' do
+      table = described_class.new(
+        headers: ['Name'],
+        rows: [['Alice']],
+        max_width: { 0 => 20 }
+      )
+      output = table.render
+      expect(output).to include('Alice')
+    end
+
+    it 'supports header name keys' do
+      table = described_class.new(
+        headers: %w[Name Bio],
+        rows: [['Alice', 'This is a long biography text']],
+        max_width: { 'Bio' => 15 }
+      )
+      output = table.render
+      expect(output).to include('This is a lo...')
+    end
+
+    it 'works with multiple styles' do
+      table = described_class.new(
+        headers: ['Col'],
+        rows: [['A very long cell value here']],
+        max_width: { 0 => 10 }
+      )
+      %i[unicode ascii markdown compact].each do |style|
+        output = table.render(style: style)
+        expect(output).to include('A very ...')
+      end
+    end
+  end
 end
