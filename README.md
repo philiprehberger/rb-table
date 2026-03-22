@@ -1,10 +1,9 @@
 # philiprehberger-table
 
-[![Tests](https://github.com/philiprehberger/rb-table/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-table/actions/workflows/ci.yml)
-[![Gem Version](https://badge.fury.io/rb/philiprehberger-table.svg)](https://rubygems.org/gems/philiprehberger-table)
-[![License](https://img.shields.io/github/license/philiprehberger/rb-table)](LICENSE)
+[![Gem Version](https://badge.fury.io/rb/philiprehberger-table.svg)](https://badge.fury.io/rb/philiprehberger-table)
+[![CI](https://github.com/philiprehberger/rb-table/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-table/actions/workflows/ci.yml)
 
-Terminal table formatting with Unicode borders, alignment, and multiple styles
+Terminal table formatting with Unicode borders, alignment, and multiple styles.
 
 ## Requirements
 
@@ -12,16 +11,14 @@ Terminal table formatting with Unicode borders, alignment, and multiple styles
 
 ## Installation
 
-Add to your Gemfile:
+```sh
+gem install philiprehberger-table
+```
+
+Or add to your Gemfile:
 
 ```ruby
 gem 'philiprehberger-table'
-```
-
-Or install directly:
-
-```bash
-gem install philiprehberger-table
 ```
 
 ## Usage
@@ -38,6 +35,12 @@ table = Philiprehberger::Table.new(
 )
 
 puts table.render
+# ┌───────┬─────┬──────┐
+# │ Name  │ Age │ City │
+# ├───────┼─────┼──────┤
+# │ Alice │ 30  │ NYC  │
+# │ Bob   │ 25  │ LA   │
+# └───────┴─────┴──────┘
 ```
 
 ### Styles
@@ -55,44 +58,46 @@ table.render(style: :compact)   # Space-aligned, no borders
 table = Philiprehberger::Table.new(
   headers: %w[Name Amount],
   rows: [%w[Alice 100], %w[Bob 50]],
-  align: { 1 => :right }
+  align: { 0 => :left, 1 => :right }
 )
 ```
 
 Supported alignments: `:left` (default), `:right`, `:center`.
 
+### ANSI Colors
+
+ANSI escape sequences are stripped for width measurement but preserved in output, so colored text renders correctly.
+
 ## API
 
-### `Philiprehberger::Table`
+### `Philiprehberger::Table.new(headers:, rows:, align:)`
 
-| Method | Description |
-|--------|-------------|
-| `.new(headers:, rows:, align:)` | Create a new table grid |
+Creates a new table. Returns a `Grid` instance.
 
-### `Philiprehberger::Table::Grid`
+- `headers` - Array of column header strings
+- `rows` - Array of row arrays (default: `[]`)
+- `align` - Hash mapping column index to `:left`, `:right`, or `:center` (default: `{}`)
 
-| Method | Description |
-|--------|-------------|
-| `#render(style:)` | Render the table (`:unicode`, `:ascii`, `:markdown`, `:compact`) |
-| `#to_s` | Render with the default Unicode style |
+### `Grid#render(style: :unicode)`
 
-### `Philiprehberger::Table::Styles`
+Renders the table as a string. Style can be `:unicode`, `:ascii`, `:markdown`, or `:compact`.
 
-| Constant | Description |
-|----------|-------------|
-| `UNICODE` | Box-drawing characters |
-| `ASCII` | `+`, `-`, `\|` characters |
-| `MARKDOWN` | Valid Markdown table format |
-| `COMPACT` | Space-aligned, no borders |
+### `Grid#to_s`
+
+Renders with the default Unicode style.
+
+### `Styles.fetch(name)`
+
+Returns a style definition hash. Raises `KeyError` for unknown styles.
 
 ## Development
 
-```bash
+```sh
 bundle install
-bundle exec rspec      # Run tests
-bundle exec rubocop    # Check code style
+bundle exec rspec
+bundle exec rubocop
 ```
 
 ## License
 
-MIT
+MIT License. See [LICENSE](LICENSE) for details.
