@@ -162,4 +162,117 @@ RSpec.describe Philiprehberger::Table do
       expect(table.to_s).to eq(table.render)
     end
   end
+
+  describe 'wide tables' do
+    it 'handles many columns' do
+      hdrs = (1..10).map { |i| "Col#{i}" }
+      data = [(1..10).map(&:to_s)]
+      table = described_class.new(headers: hdrs, rows: data)
+      output = table.render
+      expect(output).to include('Col1')
+      expect(output).to include('Col10')
+    end
+
+    it 'handles very wide cell content' do
+      table = described_class.new(headers: %w[Data], rows: [['x' * 200]])
+      output = table.render
+      expect(output).to include('x' * 200)
+    end
+  end
+
+  describe 'many rows' do
+    it 'renders 100 rows' do
+      data = (1..100).map { |i| [i.to_s, "row#{i}"] }
+      table = described_class.new(headers: %w[ID Name], rows: data)
+      output = table.render
+      lines = output.split("\n")
+      data_lines = lines.select { |l| l.include?('row') }
+      expect(data_lines.length).to eq(100)
+    end
+  end
+
+  describe 'numeric alignment with right-align' do
+    it 'right-aligns numbers in a column' do
+      table = described_class.new(
+        headers: %w[Item Price],
+        rows: [%w[Apple 1], %w[Banana 200]],
+        align: { 1 => :right }
+      )
+      output = table.render(style: :ascii)
+      lines = output.split("\n")
+      price_lines = lines.select { |l| l.include?('1') || l.include?('200') }
+      expect(price_lines.length).to be >= 2
+    end
+  end
+
+  describe 'mixed content types' do
+    it 'converts integers and symbols to strings' do
+      table = described_class.new(headers: %w[A B], rows: [[123, :hello]])
+      output = table.render
+      expect(output).to include('123')
+      expect(output).to include('hello')
+    end
+  end
+
+  describe 'nil values in cells' do
+    it 'handles nil in multiple cells' do
+      table = described_class.new(headers: %w[A B C], rows: [[nil, nil, nil]])
+      output = table.render(style: :ascii)
+      expect(output).to include('|')
+    end
+
+    it 'handles nil headers' do
+      table = described_class.new(headers: [nil, 'B'], rows: [%w[a b]])
+      output = table.render(style: :ascii)
+      expect(output).to include('B')
+      expect(output).to include('a')
+    end
+  end
+
+  describe 'markdown output validation' do
+    it 'produces valid pipe-separated markdown' do
+      table = described_class.new(headers: %w[Name Age], rows: [%w[Alice 30]])
+      output = table.render(style: :markdown)
+      lines = output.split("\n")
+      expect(lines.length).to eq(3)
+      lines.each do |line|
+        expect(line).to start_with('|')
+        expect(line).to end_with('|')
+      end
+    end
+
+    it 'separator row contains only dashes and pipes' do
+      table = described_class.new(headers: %w[A B], rows: [%w[x y]])
+      output = table.render(style: :markdown)
+      separator = output.split("\n")[1]
+      expect(separator).to match(/\A[|\-\s]+\z/)
+    end
+  end
+
+  describe 'ANSI color width calculation' do
+    it 'aligns colored and plain cells to the same column width' do
+      colored = "\e[32mGreen\e[0m"
+      table = described_class.new(headers: %w[Status], rows: [[colored], ['Plain']])
+      output = table.render(style: :ascii)
+      expect(output).to include('Green')
+      expect(output).to include('Plain')
+    end
+  end
+
+  describe 'single column table' do
+    it 'renders borders correctly for one column' do
+      table = described_class.new(headers: %w[Only], rows: [['val']])
+      output = table.render(style: :ascii)
+      expect(output).to include('Only')
+      expect(output).to include('val')
+      expect(output.split("\n").first.count('+')).to eq(2)
+    end
+  end
+
+  describe 'unknown style' do
+    it 'raises KeyError' do
+      table = described_class.new(headers: %w[A], rows: [['x']])
+      expect { table.render(style: :nonexistent) }.to raise_error(KeyError)
+    end
+  end
 end

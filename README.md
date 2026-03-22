@@ -1,6 +1,7 @@
 # philiprehberger-table
 
 [![Gem Version](https://badge.fury.io/rb/philiprehberger-table.svg)](https://badge.fury.io/rb/philiprehberger-table)
+$badge_line
 [![CI](https://github.com/philiprehberger/rb-table/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-table/actions/workflows/ci.yml)
 
 Terminal table formatting with Unicode borders, alignment, and multiple styles.
