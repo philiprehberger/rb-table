@@ -1,8 +1,8 @@
 # philiprehberger-table
 
-[![Gem Version](https://badge.fury.io/rb/philiprehberger-table.svg)](https://badge.fury.io/rb/philiprehberger-table)
-$badge_line
-[![CI](https://github.com/philiprehberger/rb-table/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-table/actions/workflows/ci.yml)
+[![Tests](https://github.com/philiprehberger/rb-table/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-table/actions/workflows/ci.yml)
+[![Gem Version](https://badge.fury.io/rb/philiprehberger-table.svg)](https://rubygems.org/gems/philiprehberger-table)
+[![License](https://img.shields.io/github/license/philiprehberger/rb-table)](LICENSE)
 
 Terminal table formatting with Unicode borders, alignment, and multiple styles.
 
