@@ -4,7 +4,7 @@
 [![Gem Version](https://badge.fury.io/rb/philiprehberger-table.svg)](https://rubygems.org/gems/philiprehberger-table)
 [![License](https://img.shields.io/github/license/philiprehberger/rb-table)](LICENSE)
 
-Terminal table formatting with Unicode borders, alignment, and multiple styles.
+Terminal table formatting with Unicode borders, alignment, and multiple styles
 
 ## Requirements
 
@@ -12,14 +12,16 @@ Terminal table formatting with Unicode borders, alignment, and multiple styles.
 
 ## Installation
 
-```sh
-gem install philiprehberger-table
-```
-
-Or add to your Gemfile:
+Add to your Gemfile:
 
 ```ruby
-gem 'philiprehberger-table'
+gem "philiprehberger-table"
+```
+
+Or install directly:
+
+```bash
+gem install philiprehberger-table
 ```
 
 ## Usage
@@ -93,7 +95,7 @@ Returns a style definition hash. Raises `KeyError` for unknown styles.
 
 ## Development
 
-```sh
+```bash
 bundle install
 bundle exec rspec
 bundle exec rubocop
@@ -101,4 +103,4 @@ bundle exec rubocop
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+MIT
