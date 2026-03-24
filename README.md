@@ -73,25 +73,12 @@ ANSI escape sequences are stripped for width measurement but preserved in output
 
 ## API
 
-### `Philiprehberger::Table.new(headers:, rows:, align:)`
-
-Creates a new table. Returns a `Grid` instance.
-
-- `headers` - Array of column header strings
-- `rows` - Array of row arrays (default: `[]`)
-- `align` - Hash mapping column index to `:left`, `:right`, or `:center` (default: `{}`)
-
-### `Grid#render(style: :unicode)`
-
-Renders the table as a string. Style can be `:unicode`, `:ascii`, `:markdown`, or `:compact`.
-
-### `Grid#to_s`
-
-Renders with the default Unicode style.
-
-### `Styles.fetch(name)`
-
-Returns a style definition hash. Raises `KeyError` for unknown styles.
+| Method | Description |
+|--------|-------------|
+| `Table.new(headers:, rows: [], align: {})` | Create a new table grid with headers, optional rows, and column alignment |
+| `Grid#render(style: :unicode)` | Render the table as a string (`:unicode`, `:ascii`, `:markdown`, `:compact`) |
+| `Grid#to_s` | Render with the default Unicode style |
+| `Styles.fetch(name)` | Return a style definition hash; raises `KeyError` for unknown styles |
 
 ## Development
 
