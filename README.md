@@ -67,6 +67,19 @@ table = Philiprehberger::Table.new(
 
 Supported alignments: `:left` (default), `:right`, `:center`.
 
+### Column Truncation
+
+```ruby
+require "philiprehberger/table"
+
+table = Philiprehberger::Table.new(
+  headers: ["Name", "Description"],
+  rows: [["Alice", "A very long description that should be truncated"]],
+  max_width: { "Description" => 20 }
+)
+puts table.render
+```
+
 ### ANSI Colors
 
 ANSI escape sequences are stripped for width measurement but preserved in output, so colored text renders correctly.
@@ -75,7 +88,7 @@ ANSI escape sequences are stripped for width measurement but preserved in output
 
 | Method | Description |
 |--------|-------------|
-| `Table.new(headers:, rows: [], align: {})` | Create a new table grid with headers, optional rows, and column alignment |
+| `Table.new(headers:, rows: [], align: {}, max_width: {})` | Create a new table grid with headers, optional rows, column alignment, and max column widths |
 | `Grid#render(style: :unicode)` | Render the table as a string (`:unicode`, `:ascii`, `:markdown`, `:compact`) |
 | `Grid#to_s` | Render with the default Unicode style |
 | `Styles.fetch(name)` | Return a style definition hash; raises `KeyError` for unknown styles |
