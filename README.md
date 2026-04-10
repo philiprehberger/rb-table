@@ -80,6 +80,30 @@ table = Philiprehberger::Table.new(
 puts table.render
 ```
 
+### Building from Hashes
+
+Build a table directly from an array of hashes — headers are derived from the keys:
+
+```ruby
+require "philiprehberger/table"
+
+data = [
+  { name: "Alice", age: 30, city: "NYC" },
+  { name: "Bob", age: 25, city: "LA" }
+]
+
+puts Philiprehberger::Table.from_hashes(data).render
+```
+
+### Adding Rows Incrementally
+
+```ruby
+table = Philiprehberger::Table.new(headers: %w[Name Age])
+table.add_row(%w[Alice 30])
+table.add_row(%w[Bob 25])
+puts table.render
+```
+
 ### ANSI Colors
 
 ANSI escape sequences are stripped for width measurement but preserved in output, so colored text renders correctly.
@@ -89,6 +113,8 @@ ANSI escape sequences are stripped for width measurement but preserved in output
 | Method | Description |
 |--------|-------------|
 | `Table.new(headers:, rows: [], align: {}, max_width: {})` | Create a new table grid with headers, optional rows, column alignment, and max column widths |
+| `Table.from_hashes(data, align: {}, max_width: {})` | Build a table from an array of hashes; headers derived from keys |
+| `Grid#add_row(row)` | Append a row after construction (returns self for chaining) |
 | `Grid#render(style: :unicode)` | Render the table as a string (`:unicode`, `:ascii`, `:markdown`, `:compact`) |
 | `Grid#to_s` | Render with the default Unicode style |
 | `Styles.fetch(name)` | Return a style definition hash; raises `KeyError` for unknown styles |

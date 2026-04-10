@@ -12,12 +12,28 @@ module Philiprehberger
       Grid.new(headers: headers, rows: rows, align: align, max_width: max_width)
     end
 
+    def self.from_hashes(data, align: {}, max_width: {})
+      return Grid.new(headers: [], rows: [], align: align, max_width: max_width) if data.empty?
+
+      headers = data.each_with_object([]) do |hash, keys|
+        hash.each_key { |k| keys << k unless keys.include?(k) }
+      end
+
+      rows = data.map { |hash| headers.map { |h| hash[h] } }
+      Grid.new(headers: headers.map(&:to_s), rows: rows, align: align, max_width: max_width)
+    end
+
     class Grid
       def initialize(headers:, rows: [], align: {}, max_width: {})
         @headers = headers.map { |h| h.nil? ? '' : h.to_s }
         @rows = rows.map { |row| row.map { |cell| cell.nil? ? '' : cell.to_s } }
         @align = align
         @max_width = resolve_max_width(headers, max_width)
+      end
+
+      def add_row(row)
+        @rows << row.map { |cell| cell.nil? ? '' : cell.to_s }
+        self
       end
 
       def render(style: :unicode)

@@ -319,4 +319,77 @@ RSpec.describe Philiprehberger::Table do
       end
     end
   end
+
+  describe '.from_hashes' do
+    it 'builds a table from an array of hashes' do
+      data = [
+        { name: 'Alice', age: 30 },
+        { name: 'Bob', age: 25 }
+      ]
+      table = described_class.from_hashes(data)
+      output = table.render(style: :compact)
+      expect(output).to include('Alice')
+      expect(output).to include('Bob')
+      expect(output).to include('name')
+      expect(output).to include('age')
+    end
+
+    it 'handles empty data' do
+      table = described_class.from_hashes([])
+      expect(table.render(style: :compact)).to be_a(String)
+    end
+
+    it 'unions keys from all hashes' do
+      data = [
+        { a: 1 },
+        { a: 2, b: 3 }
+      ]
+      table = described_class.from_hashes(data)
+      output = table.render(style: :compact)
+      expect(output).to include('a')
+      expect(output).to include('b')
+    end
+
+    it 'handles missing keys with empty cells' do
+      data = [
+        { a: 1 },
+        { b: 2 }
+      ]
+      table = described_class.from_hashes(data)
+      output = table.render(style: :ascii)
+      expect(output).to include('a')
+      expect(output).to include('b')
+    end
+
+    it 'passes align and max_width options through' do
+      data = [{ col: 'value' }]
+      table = described_class.from_hashes(data, align: { 0 => :right })
+      output = table.render(style: :compact)
+      expect(output).to include('value')
+    end
+  end
+
+  describe '#add_row' do
+    it 'appends a row after construction' do
+      table = described_class.new(headers: %w[Name Age])
+      table.add_row(%w[Alice 30])
+      table.add_row(%w[Bob 25])
+      output = table.render(style: :compact)
+      expect(output).to include('Alice')
+      expect(output).to include('Bob')
+    end
+
+    it 'returns self for chaining' do
+      table = described_class.new(headers: %w[X])
+      result = table.add_row(['1'])
+      expect(result).to be(table)
+    end
+
+    it 'handles nil cells' do
+      table = described_class.new(headers: %w[A B])
+      table.add_row([nil, 'val'])
+      output = table.render(style: :compact)
+      expect(output).to include('val')
+    end
+  end
 end

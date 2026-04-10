@@ -5,15 +5,16 @@ require_relative 'lib/philiprehberger/table/version'
 Gem::Specification.new do |spec|
   spec.name = 'philiprehberger-table'
   spec.version = Philiprehberger::Table::VERSION
-  spec.authors = ['philiprehberger']
-  spec.email = ['philiprehberger@users.noreply.github.com']
+  spec.authors = ['Philip Rehberger']
+  spec.email = ['me@philiprehberger.com']
 
   spec.summary = 'Terminal table formatting with Unicode borders, alignment, and multiple styles'
   spec.description = 'Format data as terminal tables with Unicode, ASCII, Markdown, or compact styles. ' \
-                     'Supports column alignment, auto-sizing, and ANSI color-safe width calculation.'
+                     'Build from arrays or hashes, add rows incrementally, with column alignment, ' \
+                     'auto-sizing, truncation, and ANSI color-safe width calculation.'
   spec.homepage = 'https://philiprehberger.com/open-source-packages/ruby/philiprehberger-table'
   spec.license = 'MIT'
-  spec.required_ruby_version = '>= 3.1'
+  spec.required_ruby_version = '>= 3.1.0'
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = 'https://github.com/philiprehberger/rb-table'

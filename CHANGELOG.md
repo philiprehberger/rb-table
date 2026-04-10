@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-04-09
+
+### Added
+- `Table.from_hashes(data)` builds a table from an array of hashes, deriving headers from keys
+- `Grid#add_row(row)` appends rows after construction for incremental table building
+
+### Fixed
+- Gemspec author and email to match standard template
+- Gemspec `required_ruby_version` format to `'>= 3.1.0'`
+
 ## [0.2.0] - 2026-04-04
 
 ### Added
@@ -68,3 +78,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Nil cell handling (rendered as empty strings)
 - `Renderer` class for border drawing and layout
 - `Styles` module with predefined style definitions
+
+[0.3.0]: https://github.com/philiprehberger/rb-table/releases/tag/v0.3.0
+[0.2.0]: https://github.com/philiprehberger/rb-table/releases/tag/v0.2.0
+[0.1.9]: https://github.com/philiprehberger/rb-table/releases/tag/v0.1.9
+[0.1.8]: https://github.com/philiprehberger/rb-table/releases/tag/v0.1.8
+[0.1.7]: https://github.com/philiprehberger/rb-table/releases/tag/v0.1.7
+[0.1.6]: https://github.com/philiprehberger/rb-table/releases/tag/v0.1.6
+[0.1.5]: https://github.com/philiprehberger/rb-table/releases/tag/v0.1.5
+[0.1.4]: https://github.com/philiprehberger/rb-table/releases/tag/v0.1.4
+[0.1.3]: https://github.com/philiprehberger/rb-table/releases/tag/v0.1.3
+[0.1.2]: https://github.com/philiprehberger/rb-table/releases/tag/v0.1.2
+[0.1.0]: https://github.com/philiprehberger/rb-table/releases/tag/v0.1.0
