@@ -36,8 +36,9 @@ module Philiprehberger
         self
       end
 
-      def render(style: :unicode)
+      def render(style: :unicode, separator: false, padding: 1)
         style_def = Styles.fetch(style)
+        style_name = Styles.style_name_for(style)
         widths = calculate_widths
         truncated_headers = apply_truncation(@headers)
         truncated_rows = @rows.map { |row| apply_truncation(row) }
@@ -48,7 +49,9 @@ module Philiprehberger
           widths: widths,
           align: @align,
           style: style_def,
-          style_name: style
+          style_name: style_name,
+          separator: separator,
+          padding: padding
         ).render
       end
 

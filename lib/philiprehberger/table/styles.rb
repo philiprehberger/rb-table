@@ -32,7 +32,16 @@ module Philiprehberger
       }.freeze
 
       def self.fetch(name)
+        return name if name.is_a?(Hash)
+
         REGISTRY.fetch(name) { raise KeyError, "Unknown style: #{name}. Use: #{REGISTRY.keys.join(', ')}" }
+      end
+
+      def self.style_name_for(style)
+        return style unless style.is_a?(Hash)
+
+        REGISTRY.each { |key, value| return key if value == style }
+        :custom
       end
     end
   end

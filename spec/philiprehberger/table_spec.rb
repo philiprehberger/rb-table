@@ -369,6 +369,117 @@ RSpec.describe Philiprehberger::Table do
     end
   end
 
+  describe 'custom styles' do
+    it 'accepts a custom style hash' do
+      custom = {
+        top_left: '*', top_right: '*', bottom_left: '*', bottom_right: '*',
+        horizontal: '=', vertical: '!',
+        top_mid: '*', bottom_mid: '*',
+        mid_left: '*', mid_right: '*', mid_mid: '*'
+      }
+      table = described_class.new(headers: %w[A B], rows: [%w[x y]])
+      output = table.render(style: custom)
+      expect(output).to include('!')
+      expect(output).to include('=')
+      expect(output).to include('*')
+      expect(output).to include('x')
+    end
+
+    it 'uses custom border characters in all positions' do
+      custom = {
+        top_left: 'TL', top_right: 'TR', bottom_left: 'BL', bottom_right: 'BR',
+        horizontal: '-', vertical: '|',
+        top_mid: 'TM', bottom_mid: 'BM',
+        mid_left: 'ML', mid_right: 'MR', mid_mid: 'MM'
+      }
+      table = described_class.new(headers: %w[A], rows: [['x']])
+      output = table.render(style: custom)
+      lines = output.split("\n")
+      expect(lines.first).to start_with('TL')
+      expect(lines.first).to end_with('TR')
+      expect(lines.last).to start_with('BL')
+      expect(lines.last).to end_with('BR')
+    end
+  end
+
+  describe 'row separators' do
+    it 'adds separators between data rows' do
+      table = described_class.new(headers: %w[A B], rows: [%w[1 2], %w[3 4], %w[5 6]])
+      output = table.render(style: :ascii, separator: true)
+      lines = output.split("\n")
+      # Header border + header + mid border + row + mid border + row + mid border + row + bottom border
+      border_lines = lines.grep(/^\+/)
+      expect(border_lines.length).to eq(5) # top + header-sep + 2 row-seps + bottom
+    end
+
+    it 'works with unicode style' do
+      table = described_class.new(headers: %w[X], rows: [['a'], ['b']])
+      output = table.render(style: :unicode, separator: true)
+      mid_borders = output.split("\n").select { |l| l.start_with?("\u251C") }
+      expect(mid_borders.length).to eq(2) # header sep + row sep
+    end
+
+    it 'has no effect on markdown style' do
+      table = described_class.new(headers: %w[A], rows: [['x'], ['y']])
+      with_sep = table.render(style: :markdown, separator: true)
+      without_sep = table.render(style: :markdown, separator: false)
+      expect(with_sep).to eq(without_sep)
+    end
+
+    it 'has no effect on compact style' do
+      table = described_class.new(headers: %w[A], rows: [['x'], ['y']])
+      with_sep = table.render(style: :compact, separator: true)
+      without_sep = table.render(style: :compact, separator: false)
+      expect(with_sep).to eq(without_sep)
+    end
+
+    it 'does not add separator with single row' do
+      table = described_class.new(headers: %w[A], rows: [['x']])
+      output_sep = table.render(style: :ascii, separator: true)
+      output_no_sep = table.render(style: :ascii, separator: false)
+      expect(output_sep).to eq(output_no_sep)
+    end
+  end
+
+  describe 'configurable padding' do
+    it 'renders with padding of 2' do
+      table = described_class.new(headers: %w[A], rows: [['x']])
+      output = table.render(style: :ascii, padding: 2)
+      data_line = output.split("\n").find { |l| l.include?('x') }
+      expect(data_line).to match(/\|  x  \|/)
+    end
+
+    it 'renders with padding of 0' do
+      table = described_class.new(headers: %w[A], rows: [['x']])
+      output = table.render(style: :ascii, padding: 0)
+      data_line = output.split("\n").find { |l| l.include?('x') }
+      expect(data_line).to include('|x|')
+    end
+
+    it 'adjusts border width with padding' do
+      table = described_class.new(headers: %w[AB], rows: [['xy']])
+      output_p1 = table.render(style: :ascii, padding: 1)
+      output_p2 = table.render(style: :ascii, padding: 2)
+      border_p1 = output_p1.split("\n").first
+      border_p2 = output_p2.split("\n").first
+      expect(border_p2.length).to be > border_p1.length
+    end
+
+    it 'works with markdown style' do
+      table = described_class.new(headers: %w[A B], rows: [%w[x y]])
+      output = table.render(style: :markdown, padding: 2)
+      lines = output.split("\n")
+      lines.each { |line| expect(line).to start_with('|') }
+    end
+
+    it 'default padding of 1 matches existing behavior' do
+      table = described_class.new(headers: %w[Name], rows: [['Alice']])
+      explicit = table.render(style: :ascii, padding: 1)
+      default = table.render(style: :ascii)
+      expect(explicit).to eq(default)
+    end
+  end
+
   describe '#add_row' do
     it 'appends a row after construction' do
       table = described_class.new(headers: %w[Name Age])

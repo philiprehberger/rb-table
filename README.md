@@ -104,6 +104,44 @@ table.add_row(%w[Bob 25])
 puts table.render
 ```
 
+### Custom Styles
+
+Pass a custom style hash to define your own border characters:
+
+```ruby
+custom = {
+  top_left: '*', top_right: '*', bottom_left: '*', bottom_right: '*',
+  horizontal: '=', vertical: '!',
+  top_mid: '*', bottom_mid: '*',
+  mid_left: '*', mid_right: '*', mid_mid: '*'
+}
+puts table.render(style: custom)
+```
+
+### Row Separators
+
+Add horizontal dividers between data rows for improved readability:
+
+```ruby
+puts table.render(separator: true)
+# ┌───────┬─────┬──────┐
+# │ Name  │ Age │ City │
+# ├───────┼─────┼──────┤
+# │ Alice │ 30  │ NYC  │
+# ├───────┼─────┼──────┤
+# │ Bob   │ 25  │ LA   │
+# └───────┴─────┴──────┘
+```
+
+### Cell Padding
+
+Control the spacing around cell content:
+
+```ruby
+puts table.render(padding: 2)   # wider cells
+puts table.render(padding: 0)   # no padding
+```
+
 ### ANSI Colors
 
 ANSI escape sequences are stripped for width measurement but preserved in output, so colored text renders correctly.
@@ -115,7 +153,7 @@ ANSI escape sequences are stripped for width measurement but preserved in output
 | `Table.new(headers:, rows: [], align: {}, max_width: {})` | Create a new table grid with headers, optional rows, column alignment, and max column widths |
 | `Table.from_hashes(data, align: {}, max_width: {})` | Build a table from an array of hashes; headers derived from keys |
 | `Grid#add_row(row)` | Append a row after construction (returns self for chaining) |
-| `Grid#render(style: :unicode)` | Render the table as a string (`:unicode`, `:ascii`, `:markdown`, `:compact`) |
+| `Grid#render(style: :unicode, separator: false, padding: 1)` | Render the table as a string; style accepts `:unicode`, `:ascii`, `:markdown`, `:compact`, or a custom hash |
 | `Grid#to_s` | Render with the default Unicode style |
 | `Styles.fetch(name)` | Return a style definition hash; raises `KeyError` for unknown styles |
 

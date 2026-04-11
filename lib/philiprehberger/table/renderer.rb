@@ -5,13 +5,15 @@ module Philiprehberger
     class Renderer
       ANSI_PATTERN = /\e\[[0-9;]*m/
 
-      def initialize(headers:, rows:, widths:, align:, style:, style_name:)
+      def initialize(headers:, rows:, widths:, align:, style:, style_name:, separator: false, padding: 1)
         @headers = headers
         @rows = rows
         @widths = widths
         @align = align
         @style = style
         @style_name = style_name
+        @separator = separator
+        @padding = padding
       end
 
       def render
@@ -29,7 +31,10 @@ module Philiprehberger
           lines << render_border(:top)
           lines << render_data_row(@headers)
           lines << render_border(:mid)
-          @rows.each { |row| lines << render_data_row(row) }
+          @rows.each_with_index do |row, i|
+            lines << render_border(:mid) if @separator && i.positive?
+            lines << render_data_row(row)
+          end
           lines << render_border(:bottom)
         end
 
@@ -63,26 +68,28 @@ module Philiprehberger
 
       def render_data_row(cells)
         v = @style[:vertical]
+        pad = ' ' * @padding
         padded = @widths.each_with_index.map do |width, i|
           cell = i < cells.length ? cells[i].to_s : ''
           pad_cell(cell, width, i)
         end
 
-        "#{v} #{padded.join(" #{v} ")} #{v}"
+        "#{v}#{pad}#{padded.join("#{pad}#{v}#{pad}")}#{pad}#{v}"
       end
 
       def render_compact_row(cells)
+        pad = ' ' * [@padding, 1].max
         padded = @widths.each_with_index.map do |width, i|
           cell = i < cells.length ? cells[i].to_s : ''
           pad_cell(cell, width, i)
         end
 
-        padded.join('  ')
+        padded.join(pad * 2)
       end
 
       def render_border(position)
         h = @style[:horizontal]
-        segments = @widths.map { |w| h * (w + 2) }
+        segments = @widths.map { |w| h * (w + (@padding * 2)) }
 
         case position
         when :top
@@ -95,7 +102,7 @@ module Philiprehberger
       end
 
       def render_markdown_separator
-        segments = @widths.map { |w| @style[:horizontal] * (w + 2) }
+        segments = @widths.map { |w| @style[:horizontal] * (w + (@padding * 2)) }
         "#{@style[:mid_left]}#{segments.join(@style[:mid_mid])}#{@style[:mid_right]}"
       end
     end
