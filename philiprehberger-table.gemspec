@@ -10,8 +10,9 @@ Gem::Specification.new do |spec|
 
   spec.summary = 'Terminal table formatting with Unicode borders, alignment, and multiple styles'
   spec.description = 'Format data as terminal tables with Unicode, ASCII, Markdown, or compact styles. ' \
-                     'Build from arrays or hashes, add rows incrementally, with column alignment, ' \
-                     'auto-sizing, truncation, and ANSI color-safe width calculation.'
+                     'Build from arrays, hashes, or CSV. Export to CSV and HTML. Sort, filter, ' \
+                     'and add rows incrementally, with column alignment, auto-sizing, truncation, ' \
+                     'and ANSI color-safe width calculation.'
   spec.homepage = 'https://philiprehberger.com/open-source-packages/ruby/philiprehberger-table'
   spec.license = 'MIT'
   spec.required_ruby_version = '>= 3.1.0'
