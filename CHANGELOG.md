@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-04-14
+
+### Added
+- `Grid#to_csv` exports table data as a CSV string with proper quoting
+- `Grid#to_html` exports table as HTML `<table>` with `<thead>` and `<tbody>`, with HTML escaping
+- `Grid#sort_by(column, direction: :asc)` returns a new sorted Grid by column name or index
+- `Grid#filter { |row| }` returns a new Grid containing only rows where block returns truthy
+- `Table.from_csv(string)` parses a CSV string (first row as headers) and constructs a Grid
+
 ## [0.4.0] - 2026-04-10
 
 ### Added
@@ -88,6 +97,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Renderer` class for border drawing and layout
 - `Styles` module with predefined style definitions
 
+[0.5.0]: https://github.com/philiprehberger/rb-table/releases/tag/v0.5.0
 [0.4.0]: https://github.com/philiprehberger/rb-table/releases/tag/v0.4.0
 [0.3.0]: https://github.com/philiprehberger/rb-table/releases/tag/v0.3.0
 [0.2.0]: https://github.com/philiprehberger/rb-table/releases/tag/v0.2.0

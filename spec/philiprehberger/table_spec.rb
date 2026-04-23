@@ -503,4 +503,233 @@ RSpec.describe Philiprehberger::Table do
       expect(output).to include('val')
     end
   end
+
+  describe '#to_csv' do
+    it 'exports headers as first row' do
+      table = described_class.new(headers: %w[Name Age], rows: [%w[Alice 30]])
+      csv = table.to_csv
+      lines = csv.split("\n")
+      expect(lines.first).to eq('Name,Age')
+    end
+
+    it 'exports all data rows' do
+      table = described_class.new(headers: %w[Name Age], rows: [%w[Alice 30], %w[Bob 25]])
+      csv = table.to_csv
+      lines = csv.split("\n")
+      expect(lines.length).to eq(3)
+      expect(lines[1]).to eq('Alice,30')
+      expect(lines[2]).to eq('Bob,25')
+    end
+
+    it 'quotes values containing commas' do
+      table = described_class.new(headers: %w[Name City], rows: [['Alice', 'New York, NY']])
+      csv = table.to_csv
+      expect(csv).to include('"New York, NY"')
+    end
+
+    it 'quotes values containing newlines' do
+      table = described_class.new(headers: %w[Name Bio], rows: [%W[Alice Line1\nLine2]])
+      csv = table.to_csv
+      expect(csv).to include('"Line1')
+    end
+
+    it 'handles empty rows' do
+      table = described_class.new(headers: %w[A B], rows: [])
+      csv = table.to_csv
+      expect(csv).to eq('A,B')
+    end
+
+    it 'handles empty cell values' do
+      table = described_class.new(headers: %w[A B], rows: [['', 'val']])
+      csv = table.to_csv
+      lines = csv.split("\n")
+      expect(lines[1]).to include('val')
+    end
+  end
+
+  describe '#to_html' do
+    it 'produces valid table structure' do
+      table = described_class.new(headers: %w[Name Age], rows: [%w[Alice 30]])
+      html = table.to_html
+      expect(html).to include('<table>')
+      expect(html).to include('</table>')
+      expect(html).to include('<thead>')
+      expect(html).to include('</thead>')
+      expect(html).to include('<tbody>')
+      expect(html).to include('</tbody>')
+    end
+
+    it 'renders headers in thead with th elements' do
+      table = described_class.new(headers: %w[Name Age], rows: [%w[Alice 30]])
+      html = table.to_html
+      expect(html).to include('<th>Name</th>')
+      expect(html).to include('<th>Age</th>')
+    end
+
+    it 'renders data rows in tbody with td elements' do
+      table = described_class.new(headers: %w[Name Age], rows: [%w[Alice 30], %w[Bob 25]])
+      html = table.to_html
+      expect(html).to include('<td>Alice</td>')
+      expect(html).to include('<td>30</td>')
+      expect(html).to include('<td>Bob</td>')
+      expect(html).to include('<td>25</td>')
+    end
+
+    it 'escapes HTML special characters in headers' do
+      table = described_class.new(headers: ['<script>'], rows: [['val']])
+      html = table.to_html
+      expect(html).to include('<th>&lt;script&gt;</th>')
+      expect(html).not_to include('<th><script></th>')
+    end
+
+    it 'escapes HTML special characters in cells' do
+      table = described_class.new(headers: %w[Data], rows: [['<b>bold</b>']])
+      html = table.to_html
+      expect(html).to include('<td>&lt;b&gt;bold&lt;/b&gt;</td>')
+    end
+
+    it 'escapes ampersands and quotes' do
+      table = described_class.new(headers: %w[Text], rows: [['A & B "quoted"']])
+      html = table.to_html
+      expect(html).to include('A &amp; B &quot;quoted&quot;')
+    end
+
+    it 'handles empty rows' do
+      table = described_class.new(headers: %w[A], rows: [])
+      html = table.to_html
+      expect(html).to include('<thead>')
+      expect(html).to include('<tbody>')
+      expect(html).to include('</tbody>')
+    end
+  end
+
+  describe '#sort_by' do
+    it 'sorts ascending by column name' do
+      table = described_class.new(headers: %w[Name Age], rows: [%w[Charlie 30], %w[Alice 25], %w[Bob 20]])
+      sorted = table.sort_by('Name')
+      csv = sorted.to_csv
+      lines = csv.split("\n")
+      expect(lines[1]).to start_with('Alice')
+      expect(lines[2]).to start_with('Bob')
+      expect(lines[3]).to start_with('Charlie')
+    end
+
+    it 'sorts descending by column name' do
+      table = described_class.new(headers: %w[Name Age], rows: [%w[Alice 25], %w[Charlie 30], %w[Bob 20]])
+      sorted = table.sort_by('Name', direction: :desc)
+      csv = sorted.to_csv
+      lines = csv.split("\n")
+      expect(lines[1]).to start_with('Charlie')
+      expect(lines[2]).to start_with('Bob')
+      expect(lines[3]).to start_with('Alice')
+    end
+
+    it 'sorts ascending by column index' do
+      table = described_class.new(headers: %w[Name Age], rows: [%w[Charlie 30], %w[Alice 25], %w[Bob 20]])
+      sorted = table.sort_by(0)
+      csv = sorted.to_csv
+      lines = csv.split("\n")
+      expect(lines[1]).to start_with('Alice')
+    end
+
+    it 'sorts descending by column index' do
+      table = described_class.new(headers: %w[Name Age], rows: [%w[Alice 25], %w[Bob 30]])
+      sorted = table.sort_by(1, direction: :desc)
+      csv = sorted.to_csv
+      lines = csv.split("\n")
+      expect(lines[1]).to include('30')
+      expect(lines[2]).to include('25')
+    end
+
+    it 'returns a new Grid without mutating the original' do
+      table = described_class.new(headers: %w[Name], rows: [%w[B], %w[A]])
+      sorted = table.sort_by('Name')
+      original_csv = table.to_csv
+      sorted_csv = sorted.to_csv
+      expect(original_csv).not_to eq(sorted_csv)
+      expect(original_csv.split("\n")[1]).to eq('B')
+    end
+
+    it 'raises ArgumentError for unknown column name' do
+      table = described_class.new(headers: %w[Name], rows: [%w[Alice]])
+      expect { table.sort_by('Unknown') }.to raise_error(ArgumentError, /Unknown column/)
+    end
+
+    it 'raises ArgumentError for out-of-range index' do
+      table = described_class.new(headers: %w[Name], rows: [%w[Alice]])
+      expect { table.sort_by(5) }.to raise_error(ArgumentError, /out of range/)
+    end
+  end
+
+  describe '#filter' do
+    it 'returns rows matching the block condition' do
+      table = described_class.new(headers: %w[Name Age], rows: [%w[Alice 30], %w[Bob 25], %w[Charlie 30]])
+      filtered = table.filter { |row| row[1] == '30' }
+      csv = filtered.to_csv
+      lines = csv.split("\n")
+      expect(lines.length).to eq(3)
+      expect(csv).to include('Alice')
+      expect(csv).to include('Charlie')
+      expect(csv).not_to include('Bob')
+    end
+
+    it 'returns empty grid when no rows match' do
+      table = described_class.new(headers: %w[Name], rows: [%w[Alice], %w[Bob]])
+      filtered = table.filter { |_row| false }
+      csv = filtered.to_csv
+      expect(csv).to eq('Name')
+    end
+
+    it 'returns all rows when all match' do
+      table = described_class.new(headers: %w[Name], rows: [%w[Alice], %w[Bob]])
+      filtered = table.filter { |_row| true }
+      csv = filtered.to_csv
+      lines = csv.split("\n")
+      expect(lines.length).to eq(3)
+    end
+
+    it 'does not mutate the original grid' do
+      table = described_class.new(headers: %w[Name], rows: [%w[Alice], %w[Bob]])
+      table.filter { |row| row[0] == 'Alice' }
+      csv = table.to_csv
+      expect(csv).to include('Bob')
+    end
+  end
+
+  describe '.from_csv' do
+    it 'parses a simple CSV string' do
+      csv = "Name,Age\nAlice,30\nBob,25"
+      table = described_class.from_csv(csv)
+      output = table.render(style: :compact)
+      expect(output).to include('Name')
+      expect(output).to include('Alice')
+      expect(output).to include('Bob')
+    end
+
+    it 'round-trips with to_csv' do
+      original = described_class.new(headers: %w[Name Age City], rows: [%w[Alice 30 NYC], %w[Bob 25 LA]])
+      csv_string = original.to_csv
+      restored = described_class.from_csv(csv_string)
+      expect(restored.to_csv).to eq(csv_string)
+    end
+
+    it 'handles quoted values with commas' do
+      csv = "Name,City\nAlice,\"New York, NY\""
+      table = described_class.from_csv(csv)
+      output = table.to_csv
+      expect(output).to include('"New York, NY"')
+    end
+
+    it 'handles empty CSV' do
+      table = described_class.from_csv('')
+      expect(table.to_csv).to eq('')
+    end
+
+    it 'handles headers-only CSV' do
+      csv = 'Name,Age'
+      table = described_class.from_csv(csv)
+      output = table.to_csv
+      expect(output).to eq('Name,Age')
+    end
+  end
 end
