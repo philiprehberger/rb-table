@@ -200,6 +200,16 @@ filtered = table.filter { |row| row[1].to_i >= 30 }
 
 Returns a new Grid containing only rows where the block returns truthy.
 
+### Extracting Columns
+
+```ruby
+table = Philiprehberger::Table.new(headers: %w[Name Age], rows: [['Alice', 30], ['Bob', 25]])
+table.column('Name')  # => ["Alice", "Bob"]
+table.column(1)       # => ["30", "25"]
+```
+
+Cell values are stored as strings; pass a header name or zero-based index.
+
 ### Import from CSV
 
 ```ruby
@@ -228,6 +238,7 @@ ANSI escape sequences are stripped for width measurement but preserved in output
 | `Grid#to_html` | Export as HTML `<table>` with `<thead>` and `<tbody>`; special characters are escaped |
 | `Grid#sort_by(column, direction: :asc)` | Return a new Grid sorted by column name (String) or index (Integer) |
 | `Grid#filter { \|row\| }` | Return a new Grid with only rows where block returns truthy |
+| `Grid#column(name_or_index)` | Return an Array of cell values for the given header name or zero-based index |
 | `Styles.fetch(name)` | Return a style definition hash; raises `KeyError` for unknown styles |
 
 ## Development

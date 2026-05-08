@@ -732,4 +732,31 @@ RSpec.describe Philiprehberger::Table do
       expect(output).to eq('Name,Age')
     end
   end
+
+  describe '#column' do
+    let(:table) do
+      described_class.new(headers: %w[Name Age], rows: [['Alice', 30], ['Bob', 25], ['Charlie', 41]])
+    end
+
+    it 'returns values by header name' do
+      expect(table.column('Name')).to eq(%w[Alice Bob Charlie])
+    end
+
+    it 'returns values by integer index' do
+      expect(table.column(1)).to eq(%w[30 25 41])
+    end
+
+    it 'returns an empty array for an empty table' do
+      empty = described_class.new(headers: %w[Name])
+      expect(empty.column('Name')).to eq([])
+    end
+
+    it 'raises ArgumentError for an unknown header' do
+      expect { table.column('Bogus') }.to raise_error(ArgumentError, /Unknown column/)
+    end
+
+    it 'raises ArgumentError for an out-of-range index' do
+      expect { table.column(5) }.to raise_error(ArgumentError, /out of range/)
+    end
+  end
 end

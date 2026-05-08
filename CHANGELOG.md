@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-05-08
+
+### Added
+- `Grid#column(name_or_index)` — extract a column's values as an `Array`, in row order. Accepts a header name (`String`/`Symbol`) or zero-based `Integer` index. Raises `ArgumentError` for unknown names or out-of-range indices.
+
 ## [0.5.0] - 2026-04-14
 
 ### Added

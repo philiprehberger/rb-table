@@ -107,6 +107,20 @@ module Philiprehberger
         Grid.new(headers: @headers.dup, rows: filtered, align: @align.dup, max_width: @max_width.dup)
       end
 
+      # Extract a column's values as an Array, in row order.
+      #
+      # @param column [String, Symbol, Integer] the header name or zero-based index
+      # @return [Array] cell values for the requested column
+      # @raise [ArgumentError] if the header name or index is unknown
+      # @example
+      #   t = Philiprehberger::Table.new(headers: %w[name age], rows: [['Ada', 36], ['Lin', 41]])
+      #   t.column('name')  # => ["Ada", "Lin"]
+      #   t.column(1)       # => [36, 41]
+      def column(column)
+        col_index = resolve_column_index(column)
+        @rows.map { |row| row[col_index] }
+      end
+
       private
 
       def escape_html(str)
